@@ -233,6 +233,7 @@ window.nextChar=function(){if(window._next)window._next();};
 import * as THREE from 'three';
 import { GLTFLoader }      from 'three/addons/loaders/GLTFLoader.js';
 import { RGBELoader }      from 'three/addons/loaders/RGBELoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { OrbitControls }   from 'three/addons/controls/OrbitControls.js';
 import { EffectComposer }  from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass }      from 'three/addons/postprocessing/RenderPass.js';
@@ -273,18 +274,9 @@ composer.addPass(new OutputPass()); // MANDATORY LAST
 // ── HDRI ENVIRONMENT ─────────────────────────────────────────────────
 const pmrem = new THREE.PMREMGenerator(renderer);
 pmrem.compileEquirectangularShader();
-new RGBELoader().load(
-  'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/kiara_1_dawn_1k.hdr',
-  hdr => {
-    scene.environment = pmrem.fromEquirectangular(hdr).texture;
-    hdr.dispose(); pmrem.dispose();
-  },
-  undefined,
-  () => { // Fallback if HDRI fails
-    scene.environment = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
-    pmrem.dispose();
-  }
-);
+// Environment: RoomEnvironment from the three addons (local lighting, no outside HDRI fetch; the Polyhaven HDRI was blocked by the page CSP and its fallback called a class that THREE does not export)
+scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+pmrem.dispose();
 
 // ── STAGE SCENE ──────────────────────────────────────────────────────
 const stageGroup = new THREE.Group();
@@ -1478,7 +1470,7 @@ if(document.readyState==='complete')start();else addEventListener('load',start);
 addEventListener('resize',sched);})();</script><script id="av-shell-20261124">/* AVIDAA shell: shared header (or floating pill) + footer with the "Last updated" stamp. No outside calls, no tracking.
    Template tokens are replaced when a page is built: Entity --av-archive Archive 2026-11-24 06:36 */
 (function(){
-  var NAME='Entity',SECTOR='--av-archive',STAMP='2026-11-25 14:28',HOME='https://avidaa1.github.io/';
+  var NAME='Entity',SECTOR='--av-archive',STAMP='2026-11-25 14:30',HOME='https://avidaa1.github.io/';
   var ARROW='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   function build(){
     if(!document.body||document.querySelector('.av-footer'))return;
